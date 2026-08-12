@@ -1,4 +1,4 @@
-```css
+
 * {
     margin: 0;
     padding: 0;
@@ -384,4 +384,170 @@ body.purple {
         padding: 9px 14px;
     }
 }
-```
+/* -------------------------
+   ALARM
+------------------------- */
+
+.alarm {
+    width: min(500px, 100%);
+
+    margin-top: 20px;
+
+    padding: 22px;
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+
+.section-title {
+    margin-bottom: 14px;
+
+    color: var(--muted);
+
+    font-family: Arial, sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+}
+
+
+.alarm-form {
+    display: flex;
+
+    gap: 8px;
+}
+
+
+#alarmTime {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 10px 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: rgba(0, 0, 0, 0.18);
+
+    color: var(--text);
+
+    font-family: Arial, sans-serif;
+
+    color-scheme: dark;
+}
+
+
+#alarmTime:focus {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 2px var(--accent-soft);
+}
+
+
+.alarm-status {
+    margin-top: 12px;
+
+    color: var(--muted);
+
+    font-family: Arial, sans-serif;
+
+    font-size: 12px;
+}
+
+
+.stop-alarm {
+    width: 100%;
+
+    margin-top: 12px;
+
+    color: #ff8c8c;
+
+    border-color: rgba(255, 100, 100, 0.2);
+}
+
+
+.stop-alarm:hover {
+    background: rgba(255, 80, 80, 0.08);
+
+    color: #ffaaaa;
+}
+
+
+/* Alarm ringing state */
+
+body.alarm-ringing .alarm {
+    border-color: rgba(255, 180, 84, 0.45);
+
+    animation: alarmPulse 1s ease-in-out infinite;
+}
+
+
+body.alarm-ringing #time {
+    animation: alarmText 0.8s ease-in-out infinite alternate;
+}
+
+
+@keyframes alarmPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    50% {
+        box-shadow:
+            0 10px 35px rgba(255, 180, 84, 0.2);
+    }
+}
+
+
+@keyframes alarmText {
+
+    from {
+        opacity: 0.65;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .alarm {
+        padding: 18px;
+    }
+
+    .alarm-form {
+        flex-direction: column;
+    }
+
+    #alarmTime {
+        width: 100%;
+    }
+
+}
+
+
