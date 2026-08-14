@@ -63,7 +63,65 @@
         <div class="controls">
             <button id="formatBtn">12H</button>
         </div>
+<!-- =========================
+     STOPWATCH
+========================= -->
+<section class="stopwatch-section">
 
+    <div class="stopwatch-container">
+
+        <div class="stopwatch-header">
+            <p class="section-label">STOPWATCH</p>
+            <h2>Precision Timer</h2>
+        </div>
+
+        <div class="stopwatch-display" id="stopwatchDisplay">
+            00:00:00.00
+        </div>
+
+        <div class="stopwatch-controls">
+
+            <button
+                id="startStopwatch"
+                class="stopwatch-btn primary"
+                type="button">
+                START
+            </button>
+
+            <button
+                id="lapStopwatch"
+                class="stopwatch-btn"
+                type="button"
+                disabled>
+                LAP
+            </button>
+
+            <button
+                id="resetStopwatch"
+                class="stopwatch-btn"
+                type="button">
+                RESET
+            </button>
+
+        </div>
+
+        <div class="lap-section">
+
+            <div class="lap-heading">
+                <span>LAPS</span>
+                <span id="lapCount">0</span>
+            </div>
+
+            <div
+                id="lapHistory"
+                class="lap-history">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
     </main>
 
     <script src="script.js"></script>

@@ -335,4 +335,203 @@ function playAlarmSound() {
 // Check alarm every second
 
 setInterval(checkAlarm, 1000);
+                                                    
+
+
+                                                                /* STOPWATCH */
+
+const stopwatchDisplay = document.getElementById("stopwatchDisplay");
+const startStopwatchButton = document.getElementById("startStopwatch");
+const lapStopwatchButton = document.getElementById("lapStopwatch");
+const resetStopwatchButton = document.getElementById("resetStopwatch");
+const lapHistory = document.getElementById("lapHistory");
+const lapCount = document.getElementById("lapCount");
+
+let stopwatchInterval = null;
+let stopwatchRunning = false;
+
+let stopwatchStartTime = 0;
+let stopwatchElapsedTime = 0;
+
+let lastLapTime = 0;
+let lapNumber = 0;
+
+
+/* FORMAT STOPWATCH TIME */
+
+function formatStopwatchTime(milliseconds) {
+
+    const totalCentiseconds = Math.floor(milliseconds / 10);
+
+    const centiseconds = totalCentiseconds % 100;
+
+    const totalSeconds = Math.floor(totalCentiseconds / 100);
+
+    const seconds = totalSeconds % 60;
+
+    const totalMinutes = Math.floor(totalSeconds / 60);
+
+    const minutes = totalMinutes % 60;
+
+    const hours = Math.floor(totalMinutes / 60);
+
+    return (
+        String(hours).padStart(2, "0") +
+        ":" +
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0") +
+        "." +
+        String(centiseconds).padStart(2, "0")
+    );
+}
+
+
+/* UPDATE DISPLAY*/
+
+function updateStopwatchDisplay() {
+
+    stopwatchDisplay.textContent =
+        formatStopwatchTime(stopwatchElapsedTime);
+}
+
+
+/*  START / PAUSE */
+
+function toggleStopwatch() {
+
+    if (!stopwatchRunning) {
+
+        /*
+         * If the stopwatch was paused, subtract the
+         * already elapsed time so that it resumes correctly.
+         */
+        stopwatchStartTime =
+            Date.now() - stopwatchElapsedTime;
+
+        stopwatchRunning = true;
+
+        startStopwatchButton.textContent = "PAUSE";
+
+        lapStopwatchButton.disabled = false;
+
+        stopwatchInterval = setInterval(() => {
+
+            stopwatchElapsedTime =
+                Date.now() - stopwatchStartTime;
+
+            updateStopwatchDisplay();
+
+        }, 10);
+
+    } else {
+
+        /*
+         * Save the exact elapsed time before pausing.
+         */
+        stopwatchElapsedTime =
+            Date.now() - stopwatchStartTime;
+
+        stopwatchRunning = false;
+
+        clearInterval(stopwatchInterval);
+
+        stopwatchInterval = null;
+
+        startStopwatchButton.textContent = "START";
+
+        updateStopwatchDisplay();
+    }
+}
+
+
+/* RECORD LAP */
+
+function recordStopwatchLap() {
+
+    if (!stopwatchRunning) {
+        return;
+    }
+
+    const currentLapTime =
+        stopwatchElapsedTime - lastLapTime;
+
+    lapNumber++;
+
+    lastLapTime = stopwatchElapsedTime;
+
+    const lapRow = document.createElement("div");
+
+    lapRow.className = "lap-row";
+
+    lapRow.innerHTML = `
+        <span class="lap-number">
+            ${String(lapNumber).padStart(2, "0")}
+        </span>
+
+        <span class="lap-time">
+            ${formatStopwatchTime(currentLapTime)}
+        </span>
+    `;
+
+    /*
+     * Put the newest lap at the top.
+     */
+    lapHistory.prepend(lapRow);
+
+    lapCount.textContent = lapNumber;
+}
+
+
+/* RESET STOPWATCH */
+
+function resetStopwatchClock() {
+
+    clearInterval(stopwatchInterval);
+
+    stopwatchInterval = null;
+
+    stopwatchRunning = false;
+
+    stopwatchStartTime = 0;
+
+    stopwatchElapsedTime = 0;
+
+    lastLapTime = 0;
+
+    lapNumber = 0;
+
+    startStopwatchButton.textContent = "START";
+
+    lapStopwatchButton.disabled = true;
+
+    lapHistory.innerHTML = "";
+
+    lapCount.textContent = "0";
+
+    updateStopwatchDisplay();
+}
+
+
+/*  BUTTON EVENTS */
+
+startStopwatchButton.addEventListener(
+    "click",
+    toggleStopwatch
+);
+
+lapStopwatchButton.addEventListener(
+    "click",
+    recordStopwatchLap
+);
+
+resetStopwatchButton.addEventListener(
+    "click",
+    resetStopwatchClock
+);
+
+
+/*INITIAL DISPLAY */
+
+updateStopwatchDisplay();
 
