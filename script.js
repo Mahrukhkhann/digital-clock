@@ -535,3 +535,500 @@ resetStopwatchButton.addEventListener(
 
 updateStopwatchDisplay();
 
+                                 // COUNTDOWN TIMER
+
+
+const countdownHoursInput =
+    document.getElementById("countdownHours");
+
+const countdownMinutesInput =
+    document.getElementById("countdownMinutes");
+
+const countdownSecondsInput =
+    document.getElementById("countdownSeconds");
+
+const countdownDisplay =
+    document.getElementById("countdownDisplay");
+
+const countdownStatus =
+    document.getElementById("countdownStatus");
+
+const startCountdownButton =
+    document.getElementById("startCountdown");
+
+const pauseCountdownButton =
+    document.getElementById("pauseCountdown");
+
+const resetCountdownButton =
+    document.getElementById("resetCountdown");
+
+const countdownContainer =
+    document.querySelector(".countdown-container");
+
+
+// -------------------------
+// Countdown state
+// -------------------------
+
+let countdownInterval = null;
+
+let countdownRunning = false;
+
+let countdownEndTime = 0;
+
+let countdownRemainingTime = 0;
+
+
+
+// Format countdown time
+
+
+function formatCountdownTime(milliseconds) {
+
+    const totalSeconds =
+        Math.ceil(milliseconds / 1000);
+
+    const seconds =
+        totalSeconds % 60;
+
+    const totalMinutes =
+        Math.floor(totalSeconds / 60);
+
+    const minutes =
+        totalMinutes % 60;
+
+    const hours =
+        Math.floor(totalMinutes / 60);
+
+
+    return (
+        String(hours).padStart(2, "0") +
+        ":" +
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")
+    );
+}
+
+
+
+// Get input time
+
+
+function getCountdownInputTime() {
+
+    const hours =
+        Number(countdownHoursInput.value) || 0;
+
+    const minutes =
+        Number(countdownMinutesInput.value) || 0;
+
+    const seconds =
+        Number(countdownSecondsInput.value) || 0;
+
+
+    return (
+        (hours * 60 * 60 * 1000) +
+        (minutes * 60 * 1000) +
+        (seconds * 1000)
+    );
+}
+
+// Update display
+
+
+function updateCountdownDisplay() {
+
+    countdownDisplay.textContent =
+        formatCountdownTime(
+            countdownRemainingTime
+        );
+}
+
+// Start countdown
+
+function startCountdown() {
+
+    /*
+     * If the countdown has not started yet,
+     * get the time from the input fields.
+     */
+    if (
+        countdownRemainingTime <= 0 &&
+        !countdownRunning
+    ) {
+
+        countdownRemainingTime =
+            getCountdownInputTime();
+
+    }
+
+
+    /*
+     * Prevent starting an empty countdown.
+     */
+    if (countdownRemainingTime <= 0) {
+
+        countdownStatus.textContent =
+            "Please enter a time.";
+
+        return;
+    }
+
+
+    /*
+     * Remove completed state.
+     */
+    countdownContainer.classList.remove(
+        "timer-complete"
+    );
+
+
+    /*
+     * Calculate when the countdown should finish.
+     */
+    countdownEndTime =
+        Date.now() + countdownRemainingTime;
+
+
+    countdownRunning = true;
+
+
+    startCountdownButton.disabled = true;
+
+    pauseCountdownButton.disabled = false;
+
+
+    countdownStatus.textContent =
+        "Timer running";
+
+
+    /*
+     * Update immediately.
+     */
+    updateCountdown();
+
+
+    /*
+     * Refresh the display frequently.
+     * The actual time is calculated using Date.now(),
+     * so the timer remains accurate even if the browser
+     * delays an interval.
+     */
+    countdownInterval = setInterval(
+        updateCountdown,
+        100
+    );
+}
+// Update countdown
+
+
+function updateCountdown() {
+
+    if (!countdownRunning) {
+        return;
+    }
+
+
+    countdownRemainingTime =
+        countdownEndTime - Date.now();
+
+
+    /*
+     * Timer has reached zero.
+     */
+    if (countdownRemainingTime <= 0) {
+
+        countdownRemainingTime = 0;
+
+        updateCountdownDisplay();
+
+        finishCountdown();
+
+        return;
+    }
+
+
+    updateCountdownDisplay();
+}
+
+// Pause countdown
+
+function pauseCountdown() {
+
+    if (!countdownRunning) {
+        return;
+    }
+
+
+    /*
+     * Save the remaining time before pausing.
+     */
+    countdownRemainingTime =
+        countdownEndTime - Date.now();
+
+
+    if (countdownRemainingTime < 0) {
+        countdownRemainingTime = 0;
+    }
+
+
+    countdownRunning = false;
+
+
+    clearInterval(countdownInterval);
+
+    countdownInterval = null;
+
+
+    startCountdownButton.disabled = false;
+
+    pauseCountdownButton.disabled = true;
+
+
+    countdownStatus.textContent =
+        "Timer paused";
+
+
+    updateCountdownDisplay();
+}
+
+// Reset countdown
+function resetCountdown() {
+
+    countdownRunning = false;
+
+
+    clearInterval(countdownInterval);
+
+    countdownInterval = null;
+
+
+    countdownRemainingTime = 0;
+
+    countdownEndTime = 0;
+
+
+    /*
+     * Remove completed animation.
+     */
+    countdownContainer.classList.remove(
+        "timer-complete"
+    );
+
+
+    startCountdownButton.disabled = false;
+
+    pauseCountdownButton.disabled = true;
+
+
+    countdownStatus.textContent =
+        "Ready";
+
+
+    /*
+     * Reset input values.
+     */
+    countdownHoursInput.value = 0;
+
+    countdownMinutesInput.value = 5;
+
+    countdownSecondsInput.value = 0;
+
+
+    /*
+     * Reset display.
+     */
+    countdownRemainingTime =
+        getCountdownInputTime();
+
+    updateCountdownDisplay();
+}
+
+// Timer finished
+function finishCountdown() {
+
+    countdownRunning = false;
+
+
+    clearInterval(countdownInterval);
+
+    countdownInterval = null;
+
+
+    startCountdownButton.disabled = false;
+
+    pauseCountdownButton.disabled = true;
+
+
+    countdownStatus.textContent =
+        "Timer complete";
+
+
+    countdownContainer.classList.add(
+        "timer-complete"
+    );
+
+
+    playCountdownSound();
+}
+
+// Countdown sound
+function playCountdownSound() {
+
+    const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+
+    if (!AudioContext) {
+        return;
+    }
+
+
+    const audioContext =
+        new AudioContext();
+
+
+    const oscillator =
+        audioContext.createOscillator();
+
+
+    const gain =
+        audioContext.createGain();
+
+
+    oscillator.type = "sine";
+
+    oscillator.frequency.value = 700;
+
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        audioContext.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.25,
+        audioContext.currentTime + 0.03
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        audioContext.currentTime + 0.6
+    );
+
+
+    oscillator.connect(gain);
+
+    gain.connect(audioContext.destination);
+
+
+    oscillator.start();
+
+    oscillator.stop(
+        audioContext.currentTime + 0.6
+    );
+
+
+    /*
+     * Close the audio context after the sound.
+     */
+    setTimeout(() => {
+
+        audioContext.close();
+
+    }, 700);
+}
+
+// Input validation
+
+function validateCountdownInput(input, max) {
+
+    let value = Number(input.value);
+
+
+    if (Number.isNaN(value) || value < 0) {
+
+        value = 0;
+
+    }
+
+
+    if (value > max) {
+
+        value = max;
+
+    }
+
+
+    input.value = value;
+}
+
+// Input events
+
+countdownHoursInput.addEventListener(
+    "change",
+    () => {
+
+        validateCountdownInput(
+            countdownHoursInput,
+            99
+        );
+
+    }
+);
+
+
+countdownMinutesInput.addEventListener(
+    "change",
+    () => {
+
+        validateCountdownInput(
+            countdownMinutesInput,
+            59
+        );
+
+    }
+);
+
+
+countdownSecondsInput.addEventListener(
+    "change",
+    () => {
+
+        validateCountdownInput(
+            countdownSecondsInput,
+            59
+        );
+
+    }
+);
+// Button events
+
+startCountdownButton.addEventListener(
+    "click",
+    startCountdown
+);
+
+
+pauseCountdownButton.addEventListener(
+    "click",
+    pauseCountdown
+);
+
+
+resetCountdownButton.addEventListener(
+    "click",
+    resetCountdown
+);
+
+// Initial countdown
+
+countdownRemainingTime =
+    getCountdownInputTime();
+
+updateCountdownDisplay();
+
